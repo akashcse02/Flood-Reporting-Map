@@ -159,3 +159,26 @@
     color: var(--color-foreground);
   }
 }
+
+.dark {
+  --gold: oklch(0.78 0.13 83);
+  --gold-foreground: oklch(0.2 0.03 80);
+  --sale: oklch(0.6 0.09 198);
+  --sale-foreground: oklch(0.99 0.004 95);
+  --rent: oklch(0.78 0.13 83);
+  --rent-foreground: oklch(0.2 0.03 80);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
