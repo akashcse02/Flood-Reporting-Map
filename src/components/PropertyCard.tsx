@@ -10,8 +10,9 @@ export function PropertyCard({ property }: { property: Property }) {
   const saved = isFavorite(property.id);
 
   return (
-    <article className="group overflow-hidden rounded-xl bg-card shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-lift)]">
-      <div className="relative">
+    <article className="property-card group overflow-hidden rounded-lg border border-border/70 bg-card shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+      <div className="relative overflow-hidden">
+        <span aria-hidden="true" className="card-reflection" />
         <Link to="/property/$id" params={{ id: property.id }}>
           <img
             src={property.images[0]}
@@ -22,7 +23,7 @@ export function PropertyCard({ property }: { property: Property }) {
         </Link>
         <span
           className={cn(
-            "absolute left-0 top-4 rounded-r-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
+            "absolute left-0 top-4 rounded-r-full px-3 py-1 text-xs font-semibold uppercase tracking-normal",
             property.purpose === "Sale" ? "bg-sale text-sale-foreground" : "bg-rent text-rent-foreground",
           )}
         >
