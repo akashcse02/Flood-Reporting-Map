@@ -90,13 +90,13 @@ function useReveal() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const nodes = document.querySelectorAll<HTMLElement>("[data-reveal]");
     if (reduced) {
-      nodes.forEach((node) => node.dataset.visible = "true");
+      nodes.forEach((node) => node.dataset["visible"] = "true");
       return;
     }
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          (entry.target as HTMLElement).dataset.visible = "true";
+          (entry.target as HTMLElement).dataset["visible"] = "true";
           observer.unobserve(entry.target);
         }
       }),

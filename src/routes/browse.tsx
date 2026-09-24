@@ -10,11 +10,11 @@ import { properties, type PropertyType, type Purpose } from "@/data/properties";
 import { formatBDT } from "@/lib/format";
 
 type BrowseSearch = {
-  purpose?: Purpose;
-  type?: PropertyType;
-  division?: string;
-  city?: string;
-  area?: string;
+  purpose?: Purpose | undefined;
+  type?: PropertyType | undefined;
+  division?: string | undefined;
+  city?: string | undefined;
+  area?: string | undefined;
 };
 
 const types: PropertyType[] = ["Flat", "House", "Land", "Hotel", "Commercial"];
