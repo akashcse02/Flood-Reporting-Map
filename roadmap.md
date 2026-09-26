@@ -1,7 +1,7 @@
 # Roadmap
 
-- [ ] Build Bengali smart search with suggestions, recents, voice pulse, budgets, and advanced filters
-- [ ] Add trust counters, recommendation and recent carousels, trending areas, price comparison, EMI teaser, and contact control
-- [ ] Add shared scroll motion, compact header, hero depth, card tilt/reflection, and reduced-motion support
-- [ ] Apply Bengali brand typography and complete page metadata
-- [ ] Verify desktop/mobile rendering and key interactions
+- [x] Bengali smart search, home sections, header compaction
+- [ ] AI match page verified working end-to-end
+- [ ] Post listing form saves to database; new listings appear in browse
+- [ ] Bangla/English toggle across home, browse, saved, property, footer
+- [ ] Verify all links and mobile layout
