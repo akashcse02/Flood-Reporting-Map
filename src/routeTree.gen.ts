@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiMatchRouteImport } from './routes/ai-match'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as PostRouteImport } from './routes/post'
 import { Route as PropertyIdRouteImport } from './routes/property.$id'
@@ -29,6 +30,11 @@ const AiMatchRoute = AiMatchRouteImport.update({
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-match': typeof AiMatchRoute
   '/browse': typeof BrowseRoute
+  '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
   '/property/$id': typeof PropertyIdRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-match': typeof AiMatchRoute
   '/browse': typeof BrowseRoute
+  '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
   '/property/$id': typeof PropertyIdRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-match': typeof AiMatchRoute
   '/browse': typeof BrowseRoute
+  '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
   '/property/$id': typeof PropertyIdRoute
@@ -75,14 +84,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/ai-match' | '/browse' | '/favorites' | '/post' | '/property/$id'
+    | '/'
+    | '/ai-match'
+    | '/browse'
+    | '/compare'
+    | '/favorites'
+    | '/post'
+    | '/property/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ai-match' | '/browse' | '/favorites' | '/post' | '/property/$id'
+  to:
+    | '/'
+    | '/ai-match'
+    | '/browse'
+    | '/compare'
+    | '/favorites'
+    | '/post'
+    | '/property/$id'
   id:
     | '__root__'
     | '/'
     | '/ai-match'
     | '/browse'
+    | '/compare'
     | '/favorites'
     | '/post'
     | '/property/$id'
@@ -92,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiMatchRoute: typeof AiMatchRoute
   BrowseRoute: typeof BrowseRoute
+  CompareRoute: typeof CompareRoute
   FavoritesRoute: typeof FavoritesRoute
   PostRoute: typeof PostRoute
   PropertyIdRoute: typeof PropertyIdRoute
@@ -118,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/browse'
       fullPath: '/browse'
       preLoaderRoute: typeof BrowseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -148,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiMatchRoute: AiMatchRoute,
   BrowseRoute: BrowseRoute,
+  CompareRoute: CompareRoute,
   FavoritesRoute: FavoritesRoute,
   PostRoute: PostRoute,
   PropertyIdRoute: PropertyIdRoute,
