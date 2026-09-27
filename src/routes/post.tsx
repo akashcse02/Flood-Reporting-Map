@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { generateDescription } from "@/lib/ai-describe.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +35,30 @@ function PostListing() {
   const [negotiable, setNegotiable] = useState(false);
   const [amenities, setAmenities] = useState<string[]>([]);
   const [done, setDone] = useState(false);
+  const [f, setF] = useState({ title: "", price: "", beds: "", baths: "", size: "", notes: "", descBn: "", descEn: "" });
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const describe = useServerFn(generateDescription);
+
+  async function runAi() {
+    setAiLoading(true);
+    setAiError("");
+    try {
+      const res = await describe({
+        data: {
+          purpose, type, title: f.title, notes: f.notes, price: f.price, negotiable,
+          location: [location.area, location.city, location.division].filter(Boolean).join(", "),
+          beds: f.beds, baths: f.baths, size: f.size, amenities,
+        },
+      });
+      if (res.ok) setF((prev) => ({ ...prev, descBn: res.bn, descEn: res.en }));
+      else setAiError(res.error);
+    } catch {
+      setAiError(t("বিবরণ তৈরি করা যায়নি।", "Could not generate a description."));
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   if (done) {
     return (
@@ -75,16 +101,12 @@ function PostListing() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="title">{t("শিরোনাম", "Title")}</Label>
-          <Input id="title" required maxLength={120} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="desc">{t("বিবরণ", "Description")}</Label>
-          <Textarea id="desc" rows={4} required maxLength={2000} />
+          <Input id="title" required maxLength={120} value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="price">{t("দাম (৳)", "Price (৳)")}</Label>
-            <Input id="price" type="number" min={0} required />
+            <Input id="price" type="number" min={0} required value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} />
           </div>
           <label className="flex items-center gap-3 self-end pb-2 text-sm">
             <Switch checked={negotiable} onCheckedChange={setNegotiable} /> {t("আলোচনা সাপেক্ষ", "Negotiable")}
@@ -95,9 +117,30 @@ function PostListing() {
           <LocationPicker value={location} onChange={setLocation} />
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-2"><Label htmlFor="beds">{t("বেডরুম", "Bedrooms")}</Label><Input id="beds" type="number" min={0} /></div>
-          <div className="space-y-2"><Label htmlFor="baths">{t("বাথরুম", "Bathrooms")}</Label><Input id="baths" type="number" min={0} /></div>
-          <div className="space-y-2"><Label htmlFor="size">{t("আয়তন (বর্গফুট)", "Size (sqft)")}</Label><Input id="size" type="number" min={0} /></div>
+          <div className="space-y-2"><Label htmlFor="beds">{t("বেডরুম", "Bedrooms")}</Label><Input id="beds" type="number" min={0} value={f.beds} onChange={(e) => setF({ ...f, beds: e.target.value })} /></div>
+          <div className="space-y-2"><Label htmlFor="baths">{t("বাথরুম", "Bathrooms")}</Label><Input id="baths" type="number" min={0} value={f.baths} onChange={(e) => setF({ ...f, baths: e.target.value })} /></div>
+          <div className="space-y-2"><Label htmlFor="size">{t("আয়তন (বর্গফুট)", "Size (sqft)")}</Label><Input id="size" type="number" min={0} value={f.size} onChange={(e) => setF({ ...f, size: e.target.value })} /></div>
+        </div>
+        <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Label>{t("বিবরণ", "Description")}</Label>
+            <Button type="button" size="sm" variant="secondary" disabled={aiLoading} onClick={runAi}>
+              {aiLoading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+              {t("AI দিয়ে লিখুন", "Write with AI")}
+            </Button>
+          </div>
+          <Textarea id="notes" rows={2} maxLength={2000} placeholder={t("বিশেষ তথ্য লিখুন (যেমন: লেকের পাশে, নতুন ভবন)…", "Key highlights (e.g. lake view, new building)…")} value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
+          {aiError && <p className="text-sm text-destructive">{aiError}</p>}
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-1">
+              <Label htmlFor="desc-bn" className="text-xs text-muted-foreground">বাংলা</Label>
+              <Textarea id="desc-bn" rows={7} required maxLength={3000} value={f.descBn} onChange={(e) => setF({ ...f, descBn: e.target.value })} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="desc-en" className="text-xs text-muted-foreground">English</Label>
+              <Textarea id="desc-en" rows={7} maxLength={3000} value={f.descEn} onChange={(e) => setF({ ...f, descEn: e.target.value })} />
+            </div>
+          </div>
         </div>
         <div className="space-y-2">
           <Label>{t("সুবিধাসমূহ", "Amenities")}</Label>
