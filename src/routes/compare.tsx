@@ -83,7 +83,7 @@ function Compare() {
     { label: t("বাথরুম", "Bathrooms"), cell: (p) => p.baths || "—" },
     { label: t("ফার্নিশড", "Furnished"), cell: (p) => p.furnished },
     { label: t("পার্কিং", "Parking"), cell: (p) => (p.parking ? yes : no) },
-    ...amenityOptions.map((a) => ({ label: a, cell: (p: Property) => (p.amenities.includes(a) ? yes : no) })),
+    ...amenityOptions.filter((a) => a !== "Parking").map((a) => ({ label: a, cell: (p: Property) => (p.amenities.includes(a) ? yes : no) })),
   ];
 
   return (
