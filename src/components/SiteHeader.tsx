@@ -19,6 +19,7 @@ export function SiteHeader() {
     { to: "/browse", label: t("সম্পত্তি খুঁজুন", "Browse") },
     { to: "/ai-match", label: t("AI ম্যাচ", "AI Match") },
     { to: "/favorites", label: t("সংরক্ষিত", "Saved") },
+    { to: "/agreement", label: t("চুক্তিনামা", "Agreement") },
     { to: "/post", label: t("বিজ্ঞাপন দিন", "Post listing") },
   ] as const;
 
@@ -36,7 +37,7 @@ export function SiteHeader() {
           <span className="font-display text-2xl font-semibold text-primary">{t("ঠিকানা", "Thikana")}</span>
         </Link>
         <nav className="ml-auto hidden items-center gap-1 md:flex">
-          {links.slice(0, 3).map((link) => (
+          {links.slice(0, 4).map((link) => (
             <Link key={link.to} to={link.to} className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               {link.to === "/ai-match" && <Sparkles className="size-3.5 text-accent" />}
               {link.label}
