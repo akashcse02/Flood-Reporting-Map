@@ -182,3 +182,8 @@
     letter-spacing: -0.01em;
   }
 }
+
+@media print {
+  .site-header, footer { display: none !important; }
+  body { background: white; }
+}
