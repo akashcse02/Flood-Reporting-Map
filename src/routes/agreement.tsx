@@ -21,7 +21,7 @@ export const Route = createFileRoute("/agreement")({
   component: AgreementPage,
 });
 
-const bnDigits = (s: string) => s.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+const bnDigits = (s: string) => s.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)] ?? d);
 const money = (s: string) => (s ? bnDigits(Number(s).toLocaleString("en-IN")) : "________");
 const blank = (s: string, n = 16) => (s.trim() ? s : "_".repeat(n));
 
