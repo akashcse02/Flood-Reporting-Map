@@ -10,17 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AgreementRouteImport } from './routes/agreement'
 import { Route as AiMatchRouteImport } from './routes/ai-match'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as PostRouteImport } from './routes/post'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as PropertyIdRouteImport } from './routes/property.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgreementRoute = AgreementRouteImport.update({
@@ -31,6 +38,11 @@ const AgreementRoute = AgreementRouteImport.update({
 const AiMatchRoute = AiMatchRouteImport.update({
   id: '/ai-match',
   path: '/ai-match',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrowseRoute = BrowseRouteImport.update({
@@ -53,6 +65,11 @@ const PostRoute = PostRouteImport.update({
   path: '/post',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const PropertyIdRoute = PropertyIdRouteImport.update({
   id: '/property/$id',
   path: '/property/$id',
@@ -63,31 +80,38 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agreement': typeof AgreementRoute
   '/ai-match': typeof AiMatchRoute
+  '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/property/$id': typeof PropertyIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agreement': typeof AgreementRoute
   '/ai-match': typeof AiMatchRoute
+  '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/property/$id': typeof PropertyIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/agreement': typeof AgreementRoute
   '/ai-match': typeof AiMatchRoute
+  '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/property/$id': typeof PropertyIdRoute
 }
 export interface FileRouteTypes {
@@ -96,37 +120,46 @@ export interface FileRouteTypes {
     | '/'
     | '/agreement'
     | '/ai-match'
+    | '/auth'
     | '/browse'
     | '/compare'
     | '/favorites'
     | '/post'
+    | '/dashboard'
     | '/property/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agreement'
     | '/ai-match'
+    | '/auth'
     | '/browse'
     | '/compare'
     | '/favorites'
     | '/post'
+    | '/dashboard'
     | '/property/$id'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/agreement'
     | '/ai-match'
+    | '/auth'
     | '/browse'
     | '/compare'
     | '/favorites'
     | '/post'
+    | '/_authenticated/dashboard'
     | '/property/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AgreementRoute: typeof AgreementRoute
   AiMatchRoute: typeof AiMatchRoute
+  AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   CompareRoute: typeof CompareRoute
   FavoritesRoute: typeof FavoritesRoute
@@ -143,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agreement': {
       id: '/agreement'
       path: '/agreement'
@@ -155,6 +195,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-match'
       fullPath: '/ai-match'
       preLoaderRoute: typeof AiMatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/browse': {
@@ -185,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/property/$id': {
       id: '/property/$id'
       path: '/property/$id'
@@ -195,10 +249,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AgreementRoute: AgreementRoute,
   AiMatchRoute: AiMatchRoute,
+  AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   CompareRoute: CompareRoute,
   FavoritesRoute: FavoritesRoute,
