@@ -24,6 +24,7 @@ export type Property = {
   amenities: string[];
   images: string[];
   featured?: boolean;
+  status?: "active" | "sold" | "rented";
   postedAt: string;
   seller: { name: string; phone: string; verified: boolean; rating: number; reviews: number };
 };

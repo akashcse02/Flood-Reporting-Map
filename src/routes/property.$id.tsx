@@ -3,14 +3,15 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Bath, BedDouble, BadgeCheck, Car, Check, Heart, MapPin, Phone, Ruler, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { properties } from "@/data/properties";
+import { fetchListing } from "@/lib/listings";
 import { formatBDT, formatSize, timeAgo } from "@/lib/format";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useLang } from "@/hooks/use-lang";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/property/$id")({
-  loader: ({ params }) => {
-    const property = properties.find((p) => p.id === params.id);
+  loader: async ({ params }) => {
+    const property = properties.find((p) => p.id === params.id) ?? (await fetchListing(params.id));
     if (!property) throw notFound();
     return { property };
   },

@@ -4,9 +4,11 @@ import { Heart, Home, Languages, Menu, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLang } from "@/hooks/use-lang";
+import { useAuth } from "@/hooks/use-auth";
 
 export function SiteHeader() {
   const { lang, setLang, t } = useLang();
+  const { user } = useAuth();
   const [compact, setCompact] = useState(false);
   useEffect(() => {
     const onScroll = () => setCompact(window.scrollY > 120);
@@ -44,6 +46,7 @@ export function SiteHeader() {
             </Link>
           ))}
           {langToggle}
+          <Button asChild variant="ghost" size="sm"><Link to={user ? "/dashboard" : "/auth"}>{user ? t("ড্যাশবোর্ড", "Dashboard") : t("লগইন", "Sign in")}</Link></Button>
           <Button asChild className="ml-2"><Link to="/post"><Plus className="size-4" /> {t("বিজ্ঞাপন দিন", "Post listing")}</Link></Button>
         </nav>
         <div className="ml-auto flex items-center gap-1 md:hidden">
@@ -54,6 +57,7 @@ export function SiteHeader() {
             <SheetContent side="right" className="w-64">
               <nav className="mt-10 grid gap-1">
                 {links.map((link) => <Link key={link.to} to={link.to} className="rounded-md px-3 py-3 text-base font-medium hover:bg-muted">{link.label}</Link>)}
+                <Link to={user ? "/dashboard" : "/auth"} className="rounded-md px-3 py-3 text-base font-medium hover:bg-muted">{user ? t("ড্যাশবোর্ড", "Dashboard") : t("লগইন", "Sign in")}</Link>
               </nav>
             </SheetContent>
           </Sheet>

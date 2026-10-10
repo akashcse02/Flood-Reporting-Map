@@ -12,6 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LocationPicker, type LocationValue } from "@/components/LocationPicker";
 import { amenityOptions, type PropertyType, type Purpose } from "@/data/properties";
 import { useLang } from "@/hooks/use-lang";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/post")({
   head: () => ({
@@ -39,6 +42,11 @@ function PostListing() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
   const describe = useServerFn(generateDescription);
+  const { user, ready } = useAuth();
+  const qc = useQueryClient();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [newId, setNewId] = useState<string | null>(null);
 
   async function runAi() {
     setAiLoading(true);
@@ -60,13 +68,45 @@ function PostListing() {
     }
   }
 
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) return;
+    setSaving(true);
+    setSaveError("");
+    const { data: prof } = await supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle();
+    const { data: row, error } = await supabase.from("listings").insert({
+      owner_id: user.id, title: f.title, description_bn: f.descBn, description_en: f.descEn,
+      type, purpose, price: Number(f.price) || 0, negotiable,
+      division: location.division, city: location.city, area: location.area,
+      beds: Number(f.beds) || 0, baths: Number(f.baths) || 0, size: Number(f.size) || 0, amenities,
+      seller_name: prof?.full_name || user.email || "", seller_phone: prof?.phone || "",
+    }).select("id").single();
+    setSaving(false);
+    if (error || !row) { setSaveError(t("সংরক্ষণ করা যায়নি, আবার চেষ্টা করুন।", "Could not save. Please try again.")); return; }
+    qc.invalidateQueries({ queryKey: ["listings"] });
+    setNewId(row.id);
+    setDone(true);
+  }
+
+  if (ready && !user) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-24 text-center">
+        <h1 className="text-2xl">{t("বিজ্ঞাপন দিতে লগইন করুন", "Sign in to post a listing")}</h1>
+        <Button asChild className="mt-6"><Link to="/auth">{t("লগইন / অ্যাকাউন্ট খুলুন", "Sign in / Sign up")}</Link></Button>
+      </div>
+    );
+  }
+
   if (done) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
         <CheckCircle2 className="mx-auto size-12 text-primary" />
         <h1 className="mt-4 text-2xl">{t("বিজ্ঞাপন জমা হয়েছে", "Listing submitted")}</h1>
-        <p className="mt-2 text-muted-foreground">{t("অনুমোদনের পর এটি প্রকাশিত হবে।", "It will be published after review.")}</p>
-        <Button asChild className="mt-6"><Link to="/browse">{t("সম্পত্তি দেখুন", "Browse properties")}</Link></Button>
+        <p className="mt-2 text-muted-foreground">{t("আপনার বিজ্ঞাপন এখন লাইভ।", "Your listing is now live.")}</p>
+        <div className="mt-6 flex justify-center gap-2">
+          {newId && <Button asChild><Link to="/property/$id" params={{ id: newId }}>{t("বিজ্ঞাপন দেখুন", "View listing")}</Link></Button>}
+          <Button asChild variant="outline"><Link to="/dashboard">{t("ড্যাশবোর্ড", "Dashboard")}</Link></Button>
+        </div>
       </div>
     );
   }
@@ -76,10 +116,7 @@ function PostListing() {
       <h1 className="text-3xl">{t("বিজ্ঞাপন দিন", "Post a listing")}</h1>
       <form
         className="mt-6 space-y-6 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setDone(true);
-        }}
+        onSubmit={submit}
       >
         <div className="space-y-2">
           <Label>{t("উদ্দেশ্য", "Purpose")}</Label>
@@ -152,7 +189,8 @@ function PostListing() {
             ))}
           </div>
         </div>
-        <Button type="submit" size="lg" className="w-full">{t("জমা দিন", "Submit listing")}</Button>
+        {saveError && <p className="text-sm text-destructive">{saveError}</p>}
+        <Button type="submit" size="lg" className="w-full" disabled={saving || !user}>{saving && <Loader2 className="size-4 animate-spin" />}{t("জমা দিন", "Submit listing")}</Button>
       </form>
     </div>
   );

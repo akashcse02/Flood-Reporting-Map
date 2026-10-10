@@ -29,7 +29,7 @@ export function rowToProperty(r: ListingRow): Property {
     amenities: r.amenities,
     images: [fallbackImage(r.type)],
     postedAt: r.created_at,
-    status: r.status as Property["status"],
+    status: r.status as "active" | "sold" | "rented",
     seller: { name: r.seller_name || "Owner", phone: r.seller_phone, verified: false, rating: 0, reviews: 0 },
   };
 }

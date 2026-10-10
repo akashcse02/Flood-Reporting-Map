@@ -6,6 +6,8 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { useQuery } from "@tanstack/react-query";
+import { fetchActiveListings } from "@/lib/listings";
 import { properties, type PropertyType, type Purpose } from "@/data/properties";
 import { formatBDT } from "@/lib/format";
 
@@ -47,9 +49,10 @@ function Browse() {
   const setSearch = (next: Partial<BrowseSearch>) =>
     navigate({ search: (prev) => ({ ...prev, ...next }) });
 
+  const { data: live = [] } = useQuery({ queryKey: ["listings"], queryFn: fetchActiveListings });
   const results = useMemo(
     () =>
-      properties.filter((p) => {
+      [...live, ...properties].filter((p) => {
         if (search.purpose && p.purpose !== search.purpose) return false;
         if (search.type && p.type !== search.type) return false;
         if (search.division && p.division !== search.division) return false;
@@ -59,7 +62,7 @@ function Browse() {
         if (minBeds && p.beds < minBeds) return false;
         return true;
       }),
-    [search, maxPrice, minBeds],
+    [search, maxPrice, minBeds, live],
   );
 
   return (
