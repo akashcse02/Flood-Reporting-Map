@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { CheckCircle2, ImagePlus, Loader2, Sparkles, X } from "lucide-react";
+import { IMAGE_BUCKET } from "@/lib/listings";
 import { generateDescription } from "@/lib/ai-describe.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,14 @@ function PostListing() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [newId, setNewId] = useState<string | null>(null);
+  const [files, setFiles] = useState<{ file: File; url: string }[]>([]);
+
+  function addFiles(list: FileList | null) {
+    if (!list) return;
+    const ok = Array.from(list).filter((fl) => fl.type.startsWith("image/") && fl.size <= 5 * 1024 * 1024);
+    if (ok.length < list.length) setSaveError(t("শুধু ৫MB-এর কম ছবি দেওয়া যাবে।", "Only images under 5MB are allowed."));
+    setFiles((prev) => [...prev, ...ok.map((file) => ({ file, url: URL.createObjectURL(file) }))].slice(0, 8));
+  }
 
   async function runAi() {
     setAiLoading(true);
@@ -73,12 +82,20 @@ function PostListing() {
     if (!user) return;
     setSaving(true);
     setSaveError("");
+    const paths: string[] = [];
+    for (const { file } of files) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from(IMAGE_BUCKET).upload(path, file, { contentType: file.type });
+      if (upErr) { setSaving(false); setSaveError(t("ছবি আপলোড করা যায়নি।", "Could not upload a photo.")); return; }
+      paths.push(path);
+    }
     const { data: prof } = await supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle();
     const { data: row, error } = await supabase.from("listings").insert({
       owner_id: user.id, title: f.title, description_bn: f.descBn, description_en: f.descEn,
       type, purpose, price: Number(f.price) || 0, negotiable,
       division: location.division, city: location.city, area: location.area,
-      beds: Number(f.beds) || 0, baths: Number(f.baths) || 0, size: Number(f.size) || 0, amenities,
+      beds: Number(f.beds) || 0, baths: Number(f.baths) || 0, size: Number(f.size) || 0, amenities, images: paths,
       seller_name: prof?.full_name || user.email || "", seller_phone: prof?.phone || "",
     }).select("id").single();
     setSaving(false);
@@ -187,6 +204,23 @@ function PostListing() {
                 <Checkbox checked={amenities.includes(a)} onCheckedChange={(c) => setAmenities((prev) => (c ? [...prev, a] : prev.filter((x) => x !== a)))} /> {a}
               </label>
             ))}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>{t("ছবি (সর্বোচ্চ ৮টি)", "Photos (up to 8)")}</Label>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {files.map((fl, i) => (
+              <div key={fl.url} className="relative">
+                <img src={fl.url} alt="" className="aspect-square w-full rounded-md object-cover" />
+                <button type="button" aria-label={t("ছবি বাদ দিন", "Remove photo")} onClick={() => setFiles((p) => p.filter((_, j) => j !== i))} className="absolute right-1 top-1 rounded-full bg-background/90 p-1"><X className="size-3.5" /></button>
+              </div>
+            ))}
+            {files.length < 8 && (
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed border-border text-xs text-muted-foreground hover:bg-muted">
+                <ImagePlus className="size-6" /> {t("ছবি যোগ করুন", "Add photos")}
+                <input type="file" accept="image/*" multiple className="sr-only" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
+              </label>
+            )}
           </div>
         </div>
         {saveError && <p className="text-sm text-destructive">{saveError}</p>}

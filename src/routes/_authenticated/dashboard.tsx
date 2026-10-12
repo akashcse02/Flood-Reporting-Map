@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import type { ListingRow } from "@/lib/listings";
+import { signImages, type ListingRow } from "@/lib/listings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,7 +39,8 @@ function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase.from("listings").select("*").eq("owner_id", user.id).order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      const urls = await signImages(data.flatMap((r) => r.images.slice(0, 1)));
+      return data.map((r) => ({ ...r, thumb: r.images[0] ? urls[r.images[0]] : undefined }));
     },
   });
   const refresh = () => {
@@ -92,12 +93,15 @@ function Dashboard() {
           {rows.map((r) => (
             <div key={r.id} className="rounded-xl border bg-card p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className="flex min-w-0 gap-3">
+                  {r.thumb && <img src={r.thumb} alt="" className="size-16 shrink-0 rounded-md object-cover" />}
+                  <div className="min-w-0">
                   <Link to="/property/$id" params={{ id: r.id }} className="font-semibold hover:underline">{r.title}</Link>
                   <p className="text-sm text-muted-foreground">
                     {formatBDT(Number(r.price))}{r.purpose === "Rent" ? t("/মাস", "/mo") : ""} · {[r.area, r.city].filter(Boolean).join(", ")}
                   </p>
                   <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs ${r.status === "active" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{statusLabel(r.status)}</span>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {r.status === "active" ? (
