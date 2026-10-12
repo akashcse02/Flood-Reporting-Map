@@ -4,6 +4,7 @@
 - [x] AI match page verified working end-to-end
 - [x] Post listing form saves to database; new listings appear in browse
 - [x] Accounts (email + Google), seller dashboard (edit, sold/rented, delete)
-- [ ] Admin panel (verify sellers, remove listings)
+- [x] Admin panel (verify sellers, remove listings)
+- [ ] Grant admin role to owner (waiting for owner to sign up)
 - [ ] Bangla/English toggle across home, browse, saved, property, footer
 - [ ] Verify all links and mobile layout
