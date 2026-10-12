@@ -26,6 +26,7 @@ export type Database = {
           description_en: string
           division: string
           id: string
+          images: string[]
           negotiable: boolean
           owner_id: string
           price: number
@@ -49,6 +50,7 @@ export type Database = {
           description_en?: string
           division?: string
           id?: string
+          images?: string[]
           negotiable?: boolean
           owner_id: string
           price: number
@@ -72,6 +74,7 @@ export type Database = {
           description_en?: string
           division?: string
           id?: string
+          images?: string[]
           negotiable?: boolean
           owner_id?: string
           price?: number
