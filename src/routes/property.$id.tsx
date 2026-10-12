@@ -77,7 +77,7 @@ function PropertyDetail() {
             <span className="text-xs text-muted-foreground">{timeAgo(p.postedAt)}</span>
           </div>
           <h1 className="mt-3 text-3xl">{p.title}</h1>
-          <p className="mt-2 flex items-center gap-1.5 text-muted-foreground"><MapPin className="size-4 text-accent" /> {p.address}, {p.area}, {p.city}</p>
+          {(p.area || p.city) && <p className="mt-2 flex items-center gap-1.5 text-muted-foreground"><MapPin className="size-4 text-accent" /> {[...new Set([p.address, p.area, p.city])].filter(Boolean).join(", ")}</p>}
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {p.beds > 0 && <Stat icon={<BedDouble className="size-5" />} label={t("বেডরুম", "Bedrooms")} value={p.beds} />}
