@@ -18,6 +18,7 @@ import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as PostRouteImport } from './routes/post'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as PropertyIdRouteImport } from './routes/property.$id'
 
@@ -65,6 +66,11 @@ const PostRoute = PostRouteImport.update({
   path: '/post',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/property/$id': typeof PropertyIdRoute
 }
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/property/$id': typeof PropertyIdRoute
 }
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/post': typeof PostRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/property/$id': typeof PropertyIdRoute
 }
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/favorites'
     | '/post'
+    | '/admin'
     | '/dashboard'
     | '/property/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/favorites'
     | '/post'
+    | '/admin'
     | '/dashboard'
     | '/property/$id'
   id:
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/compare'
     | '/favorites'
     | '/post'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/property/$id'
   fileRoutesById: FileRoutesById
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -250,10 +269,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
 

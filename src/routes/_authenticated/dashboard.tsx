@@ -34,6 +34,10 @@ function Dashboard() {
     queryKey: ["profile", user.id],
     queryFn: async () => (await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()).data,
   });
+  const { data: isAdmin } = useQuery({
+    queryKey: ["is-admin", user.id],
+    queryFn: async () => (await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" })).data === true,
+  });
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["my-listings", user.id],
     queryFn: async () => {
@@ -79,6 +83,7 @@ function Dashboard() {
         </div>
         <div className="flex gap-2">
           <Button asChild><Link to="/post"><Plus className="size-4" /> {t("নতুন বিজ্ঞাপন", "New listing")}</Link></Button>
+          {isAdmin && <Button asChild variant="secondary"><Link to="/admin">{t("অ্যাডমিন", "Admin")}</Link></Button>}
           <Button variant="outline" onClick={signOut}>{t("লগআউট", "Sign out")}</Button>
         </div>
       </div>
