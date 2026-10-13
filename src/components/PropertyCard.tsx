@@ -4,10 +4,12 @@ import type { Property } from "@/data/properties";
 import { formatBDT, formatSize, timeAgo } from "@/lib/format";
 import { useFavorites } from "@/hooks/use-favorites";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/hooks/use-lang";
 
 export function PropertyCard({ property }: { property: Property }) {
   const { isFavorite, toggle } = useFavorites();
   const saved = isFavorite(property.id);
+  const { t, lang } = useLang();
 
   return (
     <article className="property-card group overflow-hidden rounded-lg border border-border/70 bg-card shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
@@ -27,11 +29,11 @@ export function PropertyCard({ property }: { property: Property }) {
             property.purpose === "Sale" ? "bg-sale text-sale-foreground" : "bg-rent text-rent-foreground",
           )}
         >
-          For {property.purpose}
+          {property.purpose === "Sale" ? t("বিক্রয়", "For Sale") : t("ভাড়া", "For Rent")}
         </span>
         <button
           type="button"
-          aria-label={saved ? "Remove from favourites" : "Save to favourites"}
+          aria-label={saved ? t("সংরক্ষিত থেকে সরান", "Remove from saved") : t("সংরক্ষণ করুন", "Save")}
           onClick={() => toggle(property.id)}
           className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-card/90 text-foreground backdrop-blur transition-colors hover:bg-card"
         >
@@ -43,7 +45,7 @@ export function PropertyCard({ property }: { property: Property }) {
         <div className="flex items-start justify-between gap-3">
           <p className="font-display text-lg font-semibold text-primary">
             {formatBDT(property.price)}
-            {property.purpose === "Rent" && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
+            {property.purpose === "Rent" && <span className="text-sm font-normal text-muted-foreground">/{t("মাস", "mo")}</span>}
           </p>
           <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">
             {property.type}
@@ -57,7 +59,7 @@ export function PropertyCard({ property }: { property: Property }) {
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <MapPin className="size-4 shrink-0 text-accent" />
           <span className="truncate">
-            {property.area}, {property.city}
+            {[property.area, property.city].filter(Boolean).join(", ")}
           </span>
         </p>
 
@@ -75,7 +77,7 @@ export function PropertyCard({ property }: { property: Property }) {
           <span className="flex items-center gap-1.5">
             <Ruler className="size-4" /> {formatSize(property.size, property.sizeUnit)}
           </span>
-          <span className="ml-auto text-xs">{timeAgo(property.postedAt)}</span>
+          <span className="ml-auto text-xs">{timeAgo(property.postedAt, lang)}</span>
         </div>
       </div>
     </article>

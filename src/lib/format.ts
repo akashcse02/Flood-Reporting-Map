@@ -8,10 +8,14 @@ export function formatSize(size: number, unit: string): string {
   return `${size.toLocaleString("en-US")} ${unit}`;
 }
 
-export function timeAgo(iso: string): string {
+const bnNum = (n: number) => String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)] ?? d);
+
+export function timeAgo(iso: string, lang: "bn" | "en" = "en"): string {
   const days = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 86400000));
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 30) return `${days} days ago`;
-  return `${Math.round(days / 30)} mo ago`;
+  const bn = lang === "bn";
+  if (days === 0) return bn ? "আজ" : "Today";
+  if (days === 1) return bn ? "গতকাল" : "Yesterday";
+  if (days < 30) return bn ? `${bnNum(days)} দিন আগে` : `${days} days ago`;
+  const m = Math.round(days / 30);
+  return bn ? `${bnNum(m)} মাস আগে` : `${m} mo ago`;
 }

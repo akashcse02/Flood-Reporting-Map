@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchActiveListings } from "@/lib/listings";
 import { properties, type PropertyType, type Purpose } from "@/data/properties";
 import { formatBDT } from "@/lib/format";
+import { useLang } from "@/hooks/use-lang";
 
 type BrowseSearch = {
   purpose?: Purpose | undefined;
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/browse")({
 
 function Browse() {
   const search = Route.useSearch();
+  const { t } = useLang();
   const navigate = useNavigate({ from: "/browse" });
   const [maxPrice, setMaxPrice] = useState(200000000);
   const [minBeds, setMinBeds] = useState(0);
@@ -67,19 +69,19 @@ function Browse() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-3xl">Browse properties</h1>
+      <h1 className="text-3xl">{t("সম্পত্তি খুঁজুন", "Browse properties")}</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        {results.length} listing{results.length === 1 ? "" : "s"} match your filters.
+        {t(`${results.length}টি সম্পত্তি আপনার ফিল্টারের সঙ্গে মিলেছে।`, `${results.length} listing${results.length === 1 ? "" : "s"} match your filters.`)}
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-6 rounded-xl bg-card p-5 shadow-[var(--shadow-card)] lg:sticky lg:top-24 lg:self-start">
           <p className="flex items-center gap-2 font-semibold">
-            <SlidersHorizontal className="size-4 text-accent" /> Filters
+            <SlidersHorizontal className="size-4 text-accent" /> {t("ফিল্টার", "Filters")}
           </p>
 
           <div className="space-y-2">
-            <Label>Purpose</Label>
+            <Label>{t("উদ্দেশ্য", "Purpose")}</Label>
             <div className="flex gap-2">
               {(["Sale", "Rent"] as const).map((p) => (
                 <Button
@@ -89,31 +91,31 @@ function Browse() {
                   variant={search.purpose === p ? "default" : "outline"}
                   onClick={() => setSearch({ purpose: search.purpose === p ? undefined : p })}
                 >
-                  For {p}
+                  {p === "Sale" ? t("বিক্রয়", "For Sale") : t("ভাড়া", "For Rent")}
                 </Button>
               ))}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Property type</Label>
+            <Label>{t("সম্পত্তির ধরন", "Property type")}</Label>
             <div className="flex flex-wrap gap-2">
-              {types.map((t) => (
+              {types.map((ty) => (
                 <Button
-                  key={t}
+                  key={ty}
                   type="button"
                   size="sm"
-                  variant={search.type === t ? "default" : "outline"}
-                  onClick={() => setSearch({ type: search.type === t ? undefined : t })}
+                  variant={search.type === ty ? "default" : "outline"}
+                  onClick={() => setSearch({ type: search.type === ty ? undefined : ty })}
                 >
-                  {t}
+                  {ty}
                 </Button>
               ))}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Location</Label>
+            <Label>{t("লোকেশন", "Location")}</Label>
             <div className="[&>div]:grid-cols-1">
               <LocationPicker
                 value={{ division: search.division ?? "", city: search.city ?? "", area: search.area ?? "" }}
@@ -129,7 +131,7 @@ function Browse() {
           </div>
 
           <div className="space-y-3">
-            <Label>Max price — {formatBDT(maxPrice)}</Label>
+            <Label>{t("সর্বোচ্চ দাম", "Max price")} — {formatBDT(maxPrice)}</Label>
             <Slider
               value={[maxPrice]}
               min={10000}
@@ -140,7 +142,7 @@ function Browse() {
           </div>
 
           <div className="space-y-2">
-            <Label>Bedrooms</Label>
+            <Label>{t("বেডরুম", "Bedrooms")}</Label>
             <div className="flex gap-2">
               {[0, 1, 2, 3, 4].map((b) => (
                 <Button
@@ -150,7 +152,7 @@ function Browse() {
                   variant={minBeds === b ? "default" : "outline"}
                   onClick={() => setMinBeds(b)}
                 >
-                  {b === 0 ? "Any" : `${b}+`}
+                  {b === 0 ? t("যেকোনো", "Any") : `${b}+`}
                 </Button>
               ))}
             </div>
@@ -165,15 +167,15 @@ function Browse() {
               navigate({ search: {} });
             }}
           >
-            Reset filters
+            {t("ফিল্টার মুছুন", "Reset filters")}
           </Button>
         </aside>
 
         <div>
           {results.length === 0 ? (
             <div className="rounded-xl bg-card p-12 text-center shadow-[var(--shadow-card)]">
-              <p className="font-semibold">No properties found</p>
-              <p className="mt-1 text-sm text-muted-foreground">Try widening your area or price range.</p>
+              <p className="font-semibold">{t("কোনো সম্পত্তি পাওয়া যায়নি", "No properties found")}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t("এলাকা বা দামের সীমা বাড়িয়ে দেখুন।", "Try widening your area or price range.")}</p>
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
