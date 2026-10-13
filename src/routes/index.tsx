@@ -277,7 +277,7 @@ function HomePage() {
           <div className="mb-4 flex items-center gap-1 rounded-lg bg-muted p-1 sm:w-fit">
             {(["Sale", "Rent"] as const).map((item) => (
               <Button key={item} type="button" variant={purpose === item ? "default" : "ghost"} size="sm" onClick={() => setPurpose(item)} className="flex-1 sm:flex-none">
-                {item === "Sale" ? "কিনতে চাই" : "ভাড়া নিতে চাই"}
+                {item === "Sale" ? L("কিনতে চাই") : L("ভাড়া নিতে চাই")}
               </Button>
             ))}
           </div>
@@ -324,7 +324,7 @@ function HomePage() {
                     className="h-auto w-full justify-start gap-3 px-3 py-3 text-left"
                   >
                     <span className="grid size-9 place-items-center rounded-lg bg-secondary text-primary"><item.icon className="size-4" /></span>
-                    <span className="min-w-0"><span className="block truncate font-semibold">{item.label}</span><span className="block text-xs font-normal text-muted-foreground">{item.type}</span></span>
+                    <span className="min-w-0"><span className="block truncate font-semibold">{L(item.label)}</span><span className="block text-xs font-normal text-muted-foreground">{L(item.type)}</span></span>
                   </Button>
                 )) : <p className="px-3 py-6 text-center text-sm text-muted-foreground">{L("কোনো মিল পাওয়া যায়নি")}</p>}
               </div>
@@ -334,8 +334,8 @@ function HomePage() {
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <span className="mr-1 text-xs font-semibold text-muted-foreground">{L("দ্রুত বাজেট")}</span>
             {budgets.map((item) => (
-              <Button key={item.label} type="button" size="sm" variant={budget?.label === item.label ? "default" : "outline"} className="budget-pill rounded-full" onClick={() => selectBudget(item)}>
-                {item.label}
+              <Button key={L(item.label)} type="button" size="sm" variant={budget?.label === item.label ? "default" : "outline"} className="budget-pill rounded-full" onClick={() => selectBudget(item)}>
+                {L(item.label)}
               </Button>
             ))}
           </div>
@@ -352,8 +352,8 @@ function HomePage() {
                 <p className="mb-2 text-xs font-semibold text-muted-foreground">{L("জনপ্রিয় খোঁজ")}</p>
                 <div className="flex flex-wrap gap-2">
                   {popularSearches.map((item, index) => (
-                    <Button key={item.label} variant="outline" size="sm" className="popular-chip rounded-full" style={{ "--delay": `${index * 90}ms` } as React.CSSProperties} onClick={() => submitSearch(item.area, item.purpose)}>
-                      {item.label}
+                    <Button key={L(item.label)} variant="outline" size="sm" className="popular-chip rounded-full" style={{ "--delay": `${index * 90}ms` } as React.CSSProperties} onClick={() => submitSearch(item.area, item.purpose)}>
+                      {L(item.label)}
                     </Button>
                   ))}
                 </div>
@@ -386,9 +386,9 @@ function HomePage() {
       <section className="mx-auto mt-14 max-w-6xl px-4">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5" data-reveal>
           {categories.map((category, index) => (
-            <Link key={category.label} to="/browse" search={{ type: category.type }} className="reveal-card group flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-4 shadow-[var(--shadow-card)] transition-transform hover:-translate-y-1 hover:border-primary/30" style={{ "--delay": `${index * 70}ms` } as React.CSSProperties}>
+            <Link key={L(category.label)} to="/browse" search={{ type: category.type }} className="reveal-card group flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-4 shadow-[var(--shadow-card)] transition-transform hover:-translate-y-1 hover:border-primary/30" style={{ "--delay": `${index * 70}ms` } as React.CSSProperties}>
               <span className="grid size-10 place-items-center rounded-lg bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"><category.icon className="size-5" /></span>
-              <span className="text-sm font-semibold">{category.label}</span>
+              <span className="text-sm font-semibold">{L(category.label)}</span>
             </Link>
           ))}
         </div>
@@ -404,9 +404,9 @@ function HomePage() {
           <SectionHeading eyebrow={L("বাজারের হালচাল")} title={L("এখন ট্রেন্ডিং এলাকা")} />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
             {trendingAreas.map((area, index) => (
-              <article key={area.name} className="trend-card reveal-card rounded-lg border border-border bg-card p-5 shadow-[var(--shadow-card)]" style={{ "--delay": `${index * 75}ms` } as React.CSSProperties}>
-                <div className="flex items-start justify-between"><div><h3 className="text-lg">{area.name}</h3><p className="mt-1 text-xs text-muted-foreground">{area.count}</p></div><span className="flex items-center gap-1 text-xs font-bold text-accent"><TrendingUp className="size-3.5" /> {area.change}</span></div>
-                <svg viewBox="0 0 100 48" className="mt-5 h-12 w-full overflow-visible" role="img" aria-label={`${area.name} মূল্য প্রবণতা`}><polyline points={area.points} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sparkline text-accent" /></svg>
+              <article key={L(area.name)} className="trend-card reveal-card rounded-lg border border-border bg-card p-5 shadow-[var(--shadow-card)]" style={{ "--delay": `${index * 75}ms` } as React.CSSProperties}>
+                <div className="flex items-start justify-between"><div><h3 className="text-lg">{L(area.name)}</h3><p className="mt-1 text-xs text-muted-foreground">{L(area.count)}</p></div><span className="flex items-center gap-1 text-xs font-bold text-accent"><TrendingUp className="size-3.5" /> {L(area.change)}</span></div>
+                <svg viewBox="0 0 100 48" className="mt-5 h-12 w-full overflow-visible" role="img" aria-label={`${L(area.name)} ${L("মূল্য প্রবণতা")}`}><polyline points={area.points} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sparkline text-accent" /></svg>
               </article>
             ))}
           </div>
@@ -414,7 +414,7 @@ function HomePage() {
       </section>
 
       <section ref={resultsRef} className={`mx-auto mt-20 max-w-6xl scroll-mt-24 px-4 ${budget ? "budget-highlight" : ""}`}>
-        <SectionHeading eyebrow={budget ? `${budget.label} বাজেট` : "বাছাই করা বিজ্ঞাপন"} title={budget ? "আপনার বাজেটের সম্পত্তি" : "বিশেষভাবে নির্বাচিত"} />
+        <SectionHeading eyebrow={budget ? `${L(budget.label)} ${L("বাজেট")}` : L("বাছাই করা বিজ্ঞাপন")} title={budget ? L("আপনার বাজেটের সম্পত্তি") : L("বিশেষভাবে নির্বাচিত")} />
         {budgetResults.length ? <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-reveal>{budgetResults.slice(0, 6).map((property, index) => <div key={property.id} className="reveal-card" style={{ "--delay": `${index * 70}ms` } as React.CSSProperties}><PropertyCard property={property} /></div>)}</div> : <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">{L("এই বাজেটে এখনো কোনো সম্পত্তি নেই। অন্য বাজেট দেখুন।")}</div>}
       </section>
 
@@ -429,8 +429,8 @@ function HomePage() {
             <SectionHeading eyebrow={L("বাজার তুলনা")} title={L("এলাকা অনুযায়ী গড় দাম")} />
             <div className="space-y-5" data-reveal>
               {areaPrices.map((item, index) => (
-                <div key={item.area} className="reveal-card" style={{ "--delay": `${index * 80}ms` } as React.CSSProperties}>
-                  <div className="mb-2 flex items-center justify-between text-sm"><strong>{item.area}</strong><span className="font-semibold text-primary">{item.price} <small className="font-normal text-muted-foreground">{L("/বর্গফুট")}</small></span></div>
+                <div key={L(item.area)} className="reveal-card" style={{ "--delay": `${index * 80}ms` } as React.CSSProperties}>
+                  <div className="mb-2 flex items-center justify-between text-sm"><strong>{L(item.area)}</strong><span className="font-semibold text-primary">{L(item.price)} <small className="font-normal text-muted-foreground">{L("/বর্গফুট")}</small></span></div>
                   <div className="h-2 overflow-hidden rounded-full bg-muted"><span className="price-bar block h-full origin-left rounded-full bg-accent" style={{ "--bar-width": item.width } as React.CSSProperties} /></div>
                 </div>
               ))}
