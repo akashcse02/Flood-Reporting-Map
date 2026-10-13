@@ -1,0 +1,86 @@
+import { useCallback } from "react";
+import { useLang } from "@/hooks/use-lang";
+
+// Bangla source text -> English. Bangla is the default; unknown strings fall back to Bangla.
+const EN: Record<string, string> = {
+  "ঠিকানা": "Thikana",
+  "আপনার পরবর্তী": "Your next",
+  "এখানেই": "starts here",
+  "যাচাইকৃত সম্পত্তি, নিশ্চিন্ত সিদ্ধান্ত": "Verified properties, confident decisions",
+  "বাংলাদেশের যেকোনো প্রান্তে পছন্দের বাড়ি, ফ্ল্যাট বা জমি খুঁজুন—সহজে ও বিশ্বস্ততার সঙ্গে।": "Find your favourite house, flat or land anywhere in Bangladesh — easily and with confidence.",
+  "ঢাকার আধুনিক আবাসিক ভবন": "Modern residential buildings in Dhaka",
+  "সম্পত্তি খোঁজ": "Property search",
+  "কিনতে চাই": "I want to buy",
+  "ভাড়া নিতে চাই": "I want to rent",
+  "এলাকা, প্রজেক্ট বা ল্যান্ডমার্ক খুঁজুন...": "Search area, project or landmark...",
+  "এলাকা, প্রজেক্ট বা ল্যান্ডমার্ক": "Area, project or landmark",
+  "ভয়েস সার্চ": "Voice search",
+  "খুঁজুন": "Search",
+  "প্রস্তাবিত ফলাফল": "Suggestions",
+  "বন্ধ করুন": "Close",
+  "কোনো মিল পাওয়া যায়নি": "No matches found",
+  "দ্রুত বাজেট": "Quick budget",
+  "সাম্প্রতিক খোঁজ": "Recent searches",
+  "আপনার খোঁজ এখানে দেখা যাবে": "Your searches will appear here",
+  "জনপ্রিয় খোঁজ": "Popular searches",
+  "বিস্তারিত ফিল্টার": "More filters",
+  "সম্পত্তি": "Listings",
+  "জেলা": "Districts",
+  "যাচাইকৃত বিক্রেতা": "Verified sellers",
+  "বিশ্বস্ততার অংশীদার": "Trusted partners",
+  "প্রথম আলো": "Prothom Alo",
+  "আপনার পছন্দ বুঝে": "Picked for you",
+  "আপনার জন্য প্রস্তাবিত": "Recommended for you",
+  "সব দেখুন": "View all",
+  "বাজারের হালচাল": "Market pulse",
+  "এখন ট্রেন্ডিং এলাকা": "Trending areas now",
+  "মূল্য প্রবণতা": "price trend",
+  "বাজেট": "budget",
+  "বাছাই করা বিজ্ঞাপন": "Handpicked listings",
+  "আপনার বাজেটের সম্পত্তি": "Properties in your budget",
+  "বিশেষভাবে নির্বাচিত": "Featured selection",
+  "এই বাজেটে এখনো কোনো সম্পত্তি নেই। অন্য বাজেট দেখুন।": "No properties in this budget yet. Try another budget.",
+  "একদম নতুন": "Brand new",
+  "সদ্য যোগ হয়েছে": "Just listed",
+  "নতুন": "New",
+  "বাজার তুলনা": "Market comparison",
+  "এলাকা অনুযায়ী গড় দাম": "Average price by area",
+  "/বর্গফুট": "/sqft",
+  "সহজ হিসাব": "Quick math",
+  "মাসিক কিস্তি কত হবে?": "What will the monthly EMI be?",
+  "বাড়ির দাম ও মেয়াদ মিলিয়ে এক ঝলকে সম্ভাব্য কিস্তি দেখুন।": "See your likely instalment at a glance from price and term.",
+  "ঋণের পরিমাণ": "Loan amount",
+  "৳ ৪০ লক্ষ": "৳ 40 Lakh",
+  "আনুমানিক মাসিক কিস্তি": "Estimated monthly EMI",
+  "৳ ৩৮,৬৫০": "৳ 38,650",
+  "সম্পত্তি দেখুন": "Browse properties",
+  "মালিক ও এজেন্টদের জন্য": "For owners & agents",
+  "আপনার সম্পত্তির সঠিক ক্রেতা খুঁজুন": "Find the right buyer for your property",
+  "ছবি ও বিস্তারিত তথ্য দিয়ে কয়েক মিনিটেই বিজ্ঞাপন দিন।": "Post a listing with photos and details in minutes.",
+  "বিজ্ঞাপন দিন": "Post listing",
+  "দ্রুত যোগাযোগ": "Quick contact",
+  "কথা বলুন": "Chat",
+  // categories
+  "ফ্ল্যাট": "Flat", "বাড়ি": "House", "জমি": "Land", "হোটেল": "Hotel", "কমার্শিয়াল": "Commercial",
+  // popular searches
+  "উত্তরায় ফ্ল্যাট ভাড়া": "Flats for rent in Uttara",
+  "গুলশানে বাড়ি বিক্রয়": "Houses for sale in Gulshan",
+  "বগুড়ায় প্লট": "Plots in Bogura",
+  // suggestion labels and types
+  "উত্তরা": "Uttara", "গুলশান ২": "Gulshan 2", "বসুন্ধরা আর/এ": "Bashundhara R/A",
+  "জমুনা ফিউচার পার্ক": "Jamuna Future Park", "হাতিরঝিল": "Hatirjheel",
+  "শান্তা ওয়েস্টার্ন টাওয়ার": "Shanta Western Tower", "বায়তুল আমান হাউজিং": "Baitul Aman Housing",
+  "এলাকা": "Area", "ল্যান্ডমার্ক": "Landmark", "প্রজেক্ট": "Project",
+  // budgets
+  "৫–১০ লক্ষ": "5–10 Lakh", "১০–৩০ লক্ষ": "10–30 Lakh", "৩০–৭০ লক্ষ": "30–70 Lakh", "৭০ লক্ষ+": "70 Lakh+",
+  // trending & comparison
+  "ধানমন্ডি": "Dhanmondi", "বসুন্ধরা": "Bashundhara", "বগুড়া সদর": "Bogura Sadar", "বগুড়া": "Bogura",
+  "১,২৪০টি বাড়ি": "1,240 homes", "১,৮৯০টি বাড়ি": "1,890 homes", "৯৮০টি বাড়ি": "980 homes", "৬৪০টি বাড়ি": "640 homes",
+  "+৮.৪%": "+8.4%", "+৬.৯%": "+6.9%", "+১১.২%": "+11.2%", "+৫.১%": "+5.1%",
+  "৳ ১২,৮০০": "৳ 12,800", "৳ ৯,৪৫০": "৳ 9,450", "৳ ৪,২০০": "৳ 4,200",
+};
+
+export function useT() {
+  const { lang } = useLang();
+  return useCallback((bn: string) => (lang === "en" ? EN[bn] ?? bn : bn), [lang]);
+}

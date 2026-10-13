@@ -1,5 +1,6 @@
 import { divisions, getAreas, getCities } from "@/data/locations";
 import { SearchSelect } from "@/components/SearchSelect";
+import { useLang } from "@/hooks/use-lang";
 
 export type LocationValue = { division: string; city: string; area: string };
 
@@ -9,26 +10,27 @@ type Props = {
 };
 
 export function LocationPicker({ value, onChange }: Props) {
+  const { t } = useLang();
   const cities = getCities(value.division).map((c) => c.name);
   const areas = getAreas(value.division, value.city);
 
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       <SearchSelect
-        placeholder="Division"
+        placeholder={t("বিভাগ", "Division")}
         options={divisions.map((d) => d.name)}
         value={value.division}
         onChange={(division) => onChange({ division, city: "", area: "" })}
       />
       <SearchSelect
-        placeholder="City / District"
+        placeholder={t("শহর / জেলা", "City / District")}
         options={cities}
         value={value.city}
         disabled={!value.division}
         onChange={(city) => onChange({ ...value, city, area: "" })}
       />
       <SearchSelect
-        placeholder="Area"
+        placeholder={t("এলাকা", "Area")}
         options={areas}
         value={value.area}
         disabled={!value.city}

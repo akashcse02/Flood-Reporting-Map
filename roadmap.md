@@ -6,5 +6,5 @@
 - [x] Accounts (email + Google), seller dashboard (edit, sold/rented, delete)
 - [x] Admin panel (verify sellers, remove listings)
 - [ ] Grant admin role to owner (waiting for owner to sign up)
-- [ ] Bangla/English toggle across home, browse, saved, property, footer
+- [x] Bangla/English toggle across home, browse, saved, property, footer
 - [ ] Verify all links and mobile layout

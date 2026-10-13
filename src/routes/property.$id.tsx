@@ -45,7 +45,7 @@ function PropertyNotFound() {
 
 function PropertyDetail() {
   const { property: p } = Route.useLoaderData();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const { isFavorite, toggle } = useFavorites();
   const [active, setActive] = useState(0);
   const saved = isFavorite(p.id);
@@ -74,7 +74,7 @@ function PropertyDetail() {
               {p.purpose === "Sale" ? t("বিক্রয়", "For Sale") : t("ভাড়া", "For Rent")}
             </span>
             <span className="rounded-full bg-secondary px-3 py-1 text-xs">{p.type}</span>
-            <span className="text-xs text-muted-foreground">{timeAgo(p.postedAt)}</span>
+            <span className="text-xs text-muted-foreground">{timeAgo(p.postedAt, lang)}</span>
           </div>
           <h1 className="mt-3 text-3xl">{p.title}</h1>
           {(p.area || p.city) && <p className="mt-2 flex items-center gap-1.5 text-muted-foreground"><MapPin className="size-4 text-accent" /> {[...new Set([p.address, p.area, p.city])].filter(Boolean).join(", ")}</p>}
