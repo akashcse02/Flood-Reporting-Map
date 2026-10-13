@@ -1,4 +1,5 @@
 import { useT } from "@/lib/i18n";
+import { useLang } from "@/hooks/use-lang";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -121,6 +122,7 @@ function SectionHeading({ eyebrow, title, action }: { eyebrow: string; title: st
 }
 
 function CountUp({ target, suffix }: { target: number; suffix?: string }) {
+  const { lang } = useLang();
   const [value, setValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -144,7 +146,7 @@ function CountUp({ target, suffix }: { target: number; suffix?: string }) {
     observer.observe(node);
     return () => observer.disconnect();
   }, [target]);
-  return <span ref={ref}>{bnDigits(value)}{suffix}</span>;
+  return <span ref={ref}>{lang === "bn" ? bnDigits(value) : value.toLocaleString("en-US")}{suffix}</span>;
 }
 
 function PropertyRail({ items, freshest = false }: { items: Property[]; freshest?: boolean }) {
