@@ -89,7 +89,8 @@ function AdminPage() {
             <div className="min-w-0">
               <Link to="/property/$id" params={{ id: l.id }} className="font-semibold hover:underline">{l.title}</Link>
               <p className="text-sm text-muted-foreground">
-                {formatBDT(Number(l.price))} · {[l.area, l.city].filter(Boolean).join(", ") || "—"} · {l.seller_name} · {l.status}
+                {formatBDT(Number(l.price))} · {[l.area, l.city].filter(Boolean).join(", ") || "—"} · {l.seller_name} ·{" "}
+                {l.status === "sold" ? t("বিক্রি হয়েছে", "Sold") : l.status === "rented" ? t("ভাড়া হয়েছে", "Rented") : t("সক্রিয়", "Active")}
               </p>
             </div>
             <Button size="sm" variant="outline" onClick={() => removeListing(l.id)}>

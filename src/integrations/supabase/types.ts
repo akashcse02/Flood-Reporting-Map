@@ -146,6 +146,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      verified_sellers: { Args: { _ids: string[] }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

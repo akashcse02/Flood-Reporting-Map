@@ -15,6 +15,13 @@
       "when": 1791792387967,
       "tag": "0001_listing_images",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792177553034,
+      "tag": "0002_verified_sellers_fn",
+      "breakpoints": true
     }
   ]
 }
