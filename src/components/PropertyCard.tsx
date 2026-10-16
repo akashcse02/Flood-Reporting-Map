@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Bath, BedDouble, Heart, MapPin, Ruler } from "lucide-react";
+import { BadgeCheck, Bath, BedDouble, Heart, MapPin, Ruler } from "lucide-react";
 import type { Property } from "@/data/properties";
 import { formatBDT, formatSize, timeAgo } from "@/lib/format";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -77,6 +77,11 @@ export function PropertyCard({ property }: { property: Property }) {
           <span className="flex items-center gap-1.5">
             <Ruler className="size-4" /> {formatSize(property.size, property.sizeUnit)}
           </span>
+          {property.seller.verified && (
+            <span className="flex items-center gap-1 text-xs font-medium text-primary">
+              <BadgeCheck className="size-4" /> {t("ভেরিফায়েড", "Verified")}
+            </span>
+          )}
           <span className="ml-auto text-xs">{timeAgo(property.postedAt, lang)}</span>
         </div>
       </div>

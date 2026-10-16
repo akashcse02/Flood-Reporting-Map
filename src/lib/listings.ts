@@ -7,7 +7,7 @@ export type ListingRow = Database["public"]["Tables"]["listings"]["Row"];
 const fallbackImage = (type: string) =>
   properties.find((p) => p.type === type)?.images[0] ?? properties[0]!.images[0]!;
 
-export function rowToProperty(r: ListingRow, urls: Record<string, string> = {}): Property {
+export function rowToProperty(r: ListingRow, urls: Record<string, string> = {}, verified = new Set<string>()): Property {
   const imgs = r.images.map((k) => urls[k]).filter((u): u is string => !!u);
   return {
     id: r.id,
@@ -31,8 +31,15 @@ export function rowToProperty(r: ListingRow, urls: Record<string, string> = {}):
     images: imgs.length ? imgs : [fallbackImage(r.type)],
     postedAt: r.created_at,
     status: r.status as "active" | "sold" | "rented",
-    seller: { name: r.seller_name || "Owner", phone: r.seller_phone, verified: false, rating: 0, reviews: 0 },
+    seller: { name: r.seller_name || "Owner", phone: r.seller_phone, verified: verified.has(r.owner_id), rating: 0, reviews: 0 },
   };
+}
+
+async function verifiedSet(ids: string[]): Promise<Set<string>> {
+  const uniq = [...new Set(ids)];
+  if (!uniq.length) return new Set();
+  const { data } = await supabase.rpc("verified_sellers", { _ids: uniq });
+  return new Set((data ?? []) as string[]);
 }
 
 export async function fetchActiveListings(): Promise<Property[]> {
@@ -44,14 +51,16 @@ export async function fetchActiveListings(): Promise<Property[]> {
     .limit(200);
   if (error) throw error;
   const rows = data ?? [];
-  const urls = await signImages(rows.flatMap((r) => r.images));
-  return rows.map((r) => rowToProperty(r, urls));
+  const [urls, ver] = await Promise.all([signImages(rows.flatMap((r) => r.images)), verifiedSet(rows.map((r) => r.owner_id))]);
+  return rows.map((r) => rowToProperty(r, urls, ver));
 }
 
 export async function fetchListing(id: string): Promise<Property | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   const { data } = await supabase.from("listings").select("*").eq("id", id).maybeSingle();
-  return data ? rowToProperty(data, await signImages(data.images)) : null;
+  if (!data) return null;
+  const [urls, ver] = await Promise.all([signImages(data.images), verifiedSet([data.owner_id])]);
+  return rowToProperty(data, urls, ver);
 }
 
 export const IMAGE_BUCKET = "listing-images";
