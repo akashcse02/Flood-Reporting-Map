@@ -33,12 +33,15 @@ const initial = {
 };
 
 function AgreementPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [f, setF] = useState(initial);
   const set = (k: keyof typeof initial) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
-  const startText = f.start ? bnDigits(new Date(f.start).toLocaleDateString("en-GB")) : "____/____/______";
-  const today = bnDigits(new Date().toLocaleDateString("en-GB"));
+  const startEn = f.start ? new Date(f.start).toLocaleDateString("en-GB") : "____/____/______";
+  const startText = bnDigits(startEn);
+  const todayEn = new Date().toLocaleDateString("en-GB");
+  const today = bnDigits(todayEn);
+  const moneyEn = (s: string) => (s ? Number(s).toLocaleString("en-IN") : "________");
 
   const field = (k: keyof typeof initial, bn: string, en: string, type = "text") => (
     <div className="grid gap-1.5">
@@ -89,6 +92,34 @@ function AgreementPage() {
           <p className="text-xs text-muted-foreground">{t("PDF পেতে প্রিন্ট উইন্ডোতে \"Save as PDF\" বেছে নিন।", "Choose \"Save as PDF\" in the print window to download.")}</p>
         </form>
 
+        {lang === "en" ? (
+        <article lang="en" className="agreement-doc rounded-xl border bg-card p-6 text-[15px] leading-8 shadow-sm sm:p-10 print:border-0 print:p-0 print:shadow-none">
+          <h2 className="text-center text-2xl font-bold">House Rental Agreement</h2>
+          <p className="mt-1 text-center text-sm text-muted-foreground">Date of agreement: {todayEn}</p>
+          <p className="mt-6">
+            This agreement is made between <b>{blank(f.landlord)}</b>, NID No. <b>{blank(f.landlordNid)}</b>, address: {blank(f.landlordAddress, 24)} (hereinafter the "Landlord" / First Party) and <b>{blank(f.tenant)}</b>, NID No. <b>{blank(f.tenantNid)}</b>, address: {blank(f.tenantAddress, 24)} (hereinafter the "Tenant" / Second Party), on the following terms.
+          </p>
+          <ol className="mt-4 list-decimal space-y-2 pl-6">
+            <li>The First Party rents the premises owned by them at <b>{blank(f.property, 30)}</b> to the Second Party for residential use.</li>
+            <li>The monthly rent is <b>৳{moneyEn(f.rent)}</b>, payable by day <b>{f.dueDay || "5"}</b> of each calendar month. The First Party will issue a receipt upon payment.</li>
+            <li>The Second Party has paid an advance security deposit of <b>৳{moneyEn(f.advance)}</b>. At the end of the agreement it will be refunded after adjusting any dues or damages.</li>
+            <li>The term of this agreement is <b>{f.months || "12"}</b> months starting from <b>{startEn}</b>. It may be renewed by mutual consent.</li>
+            <li>Electricity, gas and water bills shall be paid by the Second Party as per meter, unless otherwise agreed in writing.</li>
+            <li>The Second Party shall not sublet the premises or make structural changes without the First Party's written permission.</li>
+            <li>Either party must give at least <b>{f.notice || "2"}</b> month(s) written notice to vacate or to request vacating the premises.</li>
+            <li>The Second Party shall keep the premises clean and shall not engage in any unlawful activity or cause nuisance to neighbours.</li>
+            {f.extra.trim() && <li>{f.extra}</li>}
+          </ol>
+          <p className="mt-4">Both parties, being of sound mind and acting voluntarily without coercion, have read, understood and signed this agreement.</p>
+          <div className="mt-16 grid grid-cols-2 gap-10 text-center text-sm">
+            <div><div className="border-t border-foreground pt-2">First Party (Landlord)</div></div>
+            <div><div className="border-t border-foreground pt-2">Second Party (Tenant)</div></div>
+            <div><div className="border-t border-foreground pt-2">Witness 1</div></div>
+            <div><div className="border-t border-foreground pt-2">Witness 2</div></div>
+          </div>
+          <p className="mt-10 text-xs text-muted-foreground print:hidden">Note: This is a general template. For legal use, print on non-judicial stamp paper and consult a lawyer.</p>
+        </article>
+        ) : (
         <article lang="bn" className="agreement-doc rounded-xl border bg-card p-6 text-[15px] leading-8 shadow-sm sm:p-10 print:border-0 print:p-0 print:shadow-none">
           <h2 className="text-center text-2xl font-bold">বাড়ি ভাড়ার চুক্তিপত্র</h2>
           <p className="mt-1 text-center text-sm text-muted-foreground">চুক্তির তারিখ: {today}</p>
@@ -115,6 +146,7 @@ function AgreementPage() {
           </div>
           <p className="mt-10 text-xs text-muted-foreground print:hidden">দ্রষ্টব্য: এটি একটি সাধারণ নমুনা। আইনি প্রয়োজনে নন-জুডিশিয়াল স্ট্যাম্পে মুদ্রণ ও আইনজীবীর পরামর্শ নিন।</p>
         </article>
+        )}
       </div>
     </main>
   );
